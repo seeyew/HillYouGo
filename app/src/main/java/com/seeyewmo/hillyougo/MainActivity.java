@@ -103,26 +103,6 @@ public class MainActivity extends AppCompatActivity
                                 }
                             }
                         });
-
-                    /*service.getUser(login)
-                            .subscribeOn(Schedulers.newThread())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(new Subscriber<Github>() {
-                                @Override
-                                public final void onCompleted() {
-                                    // do nothing
-                                }
-
-                                @Override
-                                public final void onError(Throwable e) {
-                                    Log.e("GithubDemo", e.getMessage());
-                                }
-
-                                @Override
-                                public final void onNext(Github response) {
-                                    mCardAdapter.addData(response);
-                                }
-                            });*/
                 }
 
         });
