@@ -47,7 +47,7 @@ public class SectionsCarouselAdapter extends FragmentPagerAdapter {
         }
         if (result != null) {
             final Bundle bundle = new Bundle();
-            bundle.putInt(SectionFragment.FRAGMENT_NUM_KEY, position);
+            bundle.putString(SectionFragment.FRAGMENT_SECTION_PATH, NYTService.ALL_SECTIONS[position]);
             result.setArguments(bundle);
         }
         return result;

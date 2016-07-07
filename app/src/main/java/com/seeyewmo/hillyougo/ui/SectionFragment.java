@@ -28,7 +28,8 @@ import rx.schedulers.Schedulers;
  * Created by seeyew on 7/7/16.
  */
 public class SectionFragment extends android.support.v4.app.Fragment{
-    public static final String FRAGMENT_NUM_KEY = "fragment_num_key";
+    public static final String FRAGMENT_SECTION_PATH = "section_path";
+    private String mPath;
 
     @Bind(R.id.recycler_view)
     protected RecyclerView mRecyclerView;
@@ -67,7 +68,7 @@ public class SectionFragment extends android.support.v4.app.Fragment{
         mButtonFetch.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 NYTService service = ServiceFactory.createRetrofitService(NYTService.class, NYTService.SERVICE_ENDPOINT);
-                service.getArticles("politics", 1)
+                service.getArticles(mPath,7)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Subscriber<NYTWrapper>() {
@@ -96,9 +97,21 @@ public class SectionFragment extends android.support.v4.app.Fragment{
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(FRAGMENT_SECTION_PATH, mPath);
+    }
+
+    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        if (savedInstanceState != null) {
+            mPath = savedInstanceState.getString(FRAGMENT_SECTION_PATH);
+        } else if (getArguments() != null){
+            Bundle args = getArguments();
+            mPath = args.getString(FRAGMENT_SECTION_PATH);
+        }
 
     }
 }
