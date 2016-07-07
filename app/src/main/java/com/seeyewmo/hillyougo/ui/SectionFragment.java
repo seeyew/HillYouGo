@@ -11,6 +11,7 @@ import android.widget.Button;
 
 import com.seeyewmo.hillyougo.R;
 import com.seeyewmo.hillyougo.adapter.NYTCardAdapter;
+import com.seeyewmo.hillyougo.model.NYTResponse;
 import com.seeyewmo.hillyougo.model.NYTWrapper;
 import com.seeyewmo.hillyougo.model.Result;
 import com.seeyewmo.hillyougo.service.DataService;
@@ -104,7 +105,7 @@ public class SectionFragment extends android.support.v4.app.Fragment {
         service.getArticles(mPath, 7)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<NYTWrapper>() {
+                .subscribe(new Subscriber<NYTResponse>() {
                     @Override
                     public void onCompleted() {
                         Log.e("NYTDemo", "Done!!");
@@ -116,7 +117,7 @@ public class SectionFragment extends android.support.v4.app.Fragment {
                     }
 
                     @Override
-                    public void onNext(NYTWrapper nytWrapper) {
+                    public void onNext(NYTResponse nytWrapper) {
                         List<Result> results = nytWrapper.getResults();
                         for (Result result : results) {
                             mCardAdapter.addData(result);

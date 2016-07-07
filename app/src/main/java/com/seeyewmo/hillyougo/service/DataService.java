@@ -2,6 +2,7 @@ package com.seeyewmo.hillyougo.service;
 
 import android.util.Log;
 
+import com.seeyewmo.hillyougo.model.NYTResponse;
 import com.seeyewmo.hillyougo.model.NYTWrapper;
 
 import rx.Observable;
@@ -38,7 +39,12 @@ public class DataService {
         mNetworkSource = service.getArticles(mSection, mPeriod)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(new Action1<NYTWrapper>() {
+                .map(new Func1<NYTResponse, NYTWrapper>() {
+                    @Override
+                    public NYTWrapper call(NYTResponse nytResponse) {
+                        return new NYTWrapper(nytResponse);
+                    }
+                }).doOnNext(new Action1<NYTWrapper>() {
                     @Override
                     public void call(NYTWrapper nytWrapper) {
                         memory = nytWrapper;
@@ -56,7 +62,7 @@ public class DataService {
                 .first(new Func1<NYTWrapper, Boolean>() {
                     @Override
                     public Boolean call(NYTWrapper nytWrapper) {
-                        return nytWrapper != null;
+                        return nytWrapper != null && nytWrapper.isUpToDate();
                     }
                 });
     }
@@ -72,13 +78,12 @@ public class DataService {
                         if (nytWrapper == null) {
                            Log.i("DataService", source + " does not have any data.");
                         }
-                        //else if (!data.isUpToDate()) {
-                        //    System.out.println(source + " has stale data.");
-                        //}
+                        else if (!nytWrapper.isUpToDate()) {
+                            Log.i("DataService", source + " has stale data.");
+                        }
                         else {
                             Log.i("DataService", source + " has the data you are looking for!");
                         }
-
                     }
                 });
             }

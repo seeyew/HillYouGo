@@ -1,6 +1,6 @@
 package com.seeyewmo.hillyougo.service;
 
-import com.seeyewmo.hillyougo.model.NYTWrapper;
+import com.seeyewmo.hillyougo.model.NYTResponse;
 
 import retrofit2.http.GET;
 import retrofit2.http.Path;
@@ -17,5 +17,5 @@ public interface NYTService {
     final String[] ALL_SECTIONS = new String[]{ "politics", "business", "arts", "sports", "health"};
 
     @GET("{section}/{time-period}.json")
-    Observable<NYTWrapper> getArticles(@Path("section") String section, @Path("time-period") int period);
+    Observable<NYTResponse> getArticles(@Path("section") String section, @Path("time-period") int period);
 }

@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity
                 service.getArticles("politics", 1)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Subscriber<NYTWrapper>() {
+                        .subscribe(new Subscriber<NYTResponse>() {
                             @Override
                             public void onCompleted() {
                                 Log.e("NYTDemo", "Done!!");
@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity
                             }
 
                             @Override
-                            public void onNext(NYTWrapper nytWrapper) {
+                            public void onNext(NYTResponse nytWrapper) {
                                 List<Result> results = nytWrapper.getResults();
                                 for (Result result : results) {
                                     mCardAdapter.addData(result);
