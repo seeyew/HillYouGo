@@ -40,6 +40,9 @@ public class SectionsCarouselFragment extends android.support.v4.app.Fragment{
         indicator.setDistributeEvenly(true);
         indicator.setViewPager(pager);
         pager.setCurrentItem(0);
+    }
 
+    public void setCurrentItem(int position) {
+        pager.setCurrentItem(position);
     }
 }

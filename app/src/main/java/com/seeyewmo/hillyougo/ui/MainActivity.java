@@ -19,6 +19,8 @@ import com.seeyewmo.hillyougo.R;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private SectionsCarouselFragment mSectionCarouselFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -139,16 +141,17 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_politics) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
+            mSectionCarouselFragment.setCurrentItem(0);
+        } else if (id == R.id.nav_business) {
+            mSectionCarouselFragment.setCurrentItem(1);
+        } else if (id == R.id.nav_arts) {
+            mSectionCarouselFragment.setCurrentItem(2);
+        } else if (id == R.id.nav_sports) {
+            mSectionCarouselFragment.setCurrentItem(3);
+        } else if (id == R.id.nav_health) {
+            mSectionCarouselFragment.setCurrentItem(4);
         } else if (id == R.id.nav_send) {
 
         }
@@ -160,8 +163,9 @@ public class MainActivity extends AppCompatActivity
 
     private void initScreen() {
         final FragmentManager fragmentManager = getSupportFragmentManager();
+        mSectionCarouselFragment = new SectionsCarouselFragment();
         fragmentManager.beginTransaction()
-                .replace(R.id.container, new SectionsCarouselFragment())
+                .replace(R.id.container, mSectionCarouselFragment)
                 .commit();
     }
 }

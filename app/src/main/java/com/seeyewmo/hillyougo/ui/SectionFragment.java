@@ -27,7 +27,7 @@ import rx.schedulers.Schedulers;
 /**
  * Created by seeyew on 7/7/16.
  */
-public class SectionFragment extends android.support.v4.app.Fragment{
+public class SectionFragment extends android.support.v4.app.Fragment {
     public static final String FRAGMENT_SECTION_PATH = "section_path";
     private String mPath;
 
@@ -38,7 +38,7 @@ public class SectionFragment extends android.support.v4.app.Fragment{
     protected Button mButtonClear;
 
     @Bind(R.id.button_fetch)
-    protected Button  mButtonFetch;
+    protected Button mButtonFetch;
 
     final NYTCardAdapter mCardAdapter = new NYTCardAdapter();
 
@@ -67,31 +67,8 @@ public class SectionFragment extends android.support.v4.app.Fragment{
 
         mButtonFetch.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                NYTService service = ServiceFactory.createRetrofitService(NYTService.class, NYTService.SERVICE_ENDPOINT);
-                service.getArticles(mPath,7)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Subscriber<NYTWrapper>() {
-                            @Override
-                            public void onCompleted() {
-                                Log.e("NYTDemo", "Done!!");
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-                                Log.e("NYTDemo", e.getMessage());
-                            }
-
-                            @Override
-                            public void onNext(NYTWrapper nytWrapper) {
-                                List<Result> results = nytWrapper.getResults();
-                                for (Result result : results) {
-                                    mCardAdapter.addData(result);
-                                }
-                            }
-                        });
+                loadData();
             }
-
         });
 
     }
@@ -108,10 +85,39 @@ public class SectionFragment extends android.support.v4.app.Fragment{
 
         if (savedInstanceState != null) {
             mPath = savedInstanceState.getString(FRAGMENT_SECTION_PATH);
-        } else if (getArguments() != null){
+        } else if (getArguments() != null) {
             Bundle args = getArguments();
             mPath = args.getString(FRAGMENT_SECTION_PATH);
         }
+        loadData();
+    }
 
+    /**
+     * Load data from Storage
+     */
+    private void loadData() {
+        NYTService service = ServiceFactory.createRetrofitService(NYTService.class, NYTService.SERVICE_ENDPOINT);
+        service.getArticles(mPath, 7)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<NYTWrapper>() {
+                    @Override
+                    public void onCompleted() {
+                        Log.e("NYTDemo", "Done!!");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e("NYTDemo", e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(NYTWrapper nytWrapper) {
+                        List<Result> results = nytWrapper.getResults();
+                        for (Result result : results) {
+                            mCardAdapter.addData(result);
+                        }
+                    }
+                });
     }
 }
