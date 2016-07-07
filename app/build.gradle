@@ -20,7 +20,10 @@ android {
 }
 
 repositories {
+    maven { url 'https://github.com/seeyew/mvn-repo/raw/master/' }
     maven { url "http://repository.codehaus.org/org/codehaus" }
+    mavenLocal()
+    jcenter()
 }
 
 dependencies {
@@ -42,5 +45,10 @@ dependencies {
     compile 'com.squareup.retrofit2:converter-jackson:2.1.0'
     compile 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
 
+    // View Injection
+    compile 'com.jakewharton:butterknife:7.0.1'
+
+    //View Pager Indicator
+    compile 'com.actionbarsherlock:viewpagerindicator:2.4.1'
 }
 
