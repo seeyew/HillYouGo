@@ -28,10 +28,16 @@ public class NYTCardAdapter extends RecyclerView.Adapter<NYTCardAdapter.ViewHold
         mItems.add(g2);*/
     }
 
-    public void addData(Result result) {
-        mItems.add(result);
+    public void addAllData(List<Result> results) {
+        mItems.clear();
+        mItems.addAll(results);
         notifyDataSetChanged();
     }
+
+   /* public void addData(Result result) {
+        mItems.add(result);
+        notifyDataSetChanged();
+    }*/
 
     public void clear() {
         mItems.clear();

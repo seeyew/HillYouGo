@@ -11,20 +11,15 @@ import android.widget.Button;
 
 import com.seeyewmo.hillyougo.R;
 import com.seeyewmo.hillyougo.adapter.NYTCardAdapter;
-import com.seeyewmo.hillyougo.model.NYTResponse;
 import com.seeyewmo.hillyougo.model.NYTWrapper;
 import com.seeyewmo.hillyougo.model.Result;
 import com.seeyewmo.hillyougo.service.DataService;
-import com.seeyewmo.hillyougo.service.NYTService;
-import com.seeyewmo.hillyougo.service.ServiceFactory;
 
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by seeyew on 7/7/16.
@@ -93,40 +88,14 @@ public class SectionFragment extends android.support.v4.app.Fragment {
             mPath = args.getString(FRAGMENT_SECTION_PATH);
         }
 
-        mDataService = new DataService(mPath, 7);
+        mDataService = new DataService(this.getActivity(), mPath, 7);
         loadDataWithCache(false);
     }
 
-    /**
-     * Load data from Storage
-     */
-    private void loadData() {
-        NYTService service = ServiceFactory.createRetrofitService(NYTService.class, NYTService.SERVICE_ENDPOINT);
-        service.getArticles(mPath, 7)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<NYTResponse>() {
-                    @Override
-                    public void onCompleted() {
-                        Log.e("NYTDemo", "Done!!");
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.e("NYTDemo", e.getMessage());
-                    }
-
-                    @Override
-                    public void onNext(NYTResponse nytWrapper) {
-                        List<Result> results = nytWrapper.getResults();
-                        for (Result result : results) {
-                            mCardAdapter.addData(result);
-                        }
-                    }
-                });
-    }
 
     private void loadDataWithCache(boolean refresh) {
+        //TODO: Total hack, we should only have on observable
+        //TODO: Need to unsubscribe
         mDataService.getArticles(refresh).subscribe(new Subscriber<NYTWrapper>() {
             @Override
             public void onCompleted() {
@@ -144,9 +113,14 @@ public class SectionFragment extends android.support.v4.app.Fragment {
                     return;
                 }
                 List<Result> results = nytWrapper.getResults();
-                for (Result result : results) {
-                    mCardAdapter.addData(result);
+                if (results != null) {
+                    mCardAdapter.addAllData(results);
                 }
+                if (!nytWrapper.isUpToDate()) {
+                    Log.i("SectionFragment", "Calling update because data is stale");
+                    loadDataWithCache(true);
+                }
+
             }
         });
     }
