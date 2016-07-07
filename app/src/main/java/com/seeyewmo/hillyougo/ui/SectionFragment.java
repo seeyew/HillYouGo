@@ -13,6 +13,7 @@ import com.seeyewmo.hillyougo.R;
 import com.seeyewmo.hillyougo.adapter.NYTCardAdapter;
 import com.seeyewmo.hillyougo.model.NYTWrapper;
 import com.seeyewmo.hillyougo.model.Result;
+import com.seeyewmo.hillyougo.service.DataService;
 import com.seeyewmo.hillyougo.service.NYTService;
 import com.seeyewmo.hillyougo.service.ServiceFactory;
 
@@ -30,6 +31,7 @@ import rx.schedulers.Schedulers;
 public class SectionFragment extends android.support.v4.app.Fragment {
     public static final String FRAGMENT_SECTION_PATH = "section_path";
     private String mPath;
+    private DataService mDataService;
 
     @Bind(R.id.recycler_view)
     protected RecyclerView mRecyclerView;
@@ -67,7 +69,7 @@ public class SectionFragment extends android.support.v4.app.Fragment {
 
         mButtonFetch.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                loadData();
+                loadDataWithCache(true);
             }
         });
 
@@ -89,7 +91,9 @@ public class SectionFragment extends android.support.v4.app.Fragment {
             Bundle args = getArguments();
             mPath = args.getString(FRAGMENT_SECTION_PATH);
         }
-        loadData();
+
+        mDataService = new DataService(mPath, 7);
+        loadDataWithCache(false);
     }
 
     /**
@@ -119,5 +123,30 @@ public class SectionFragment extends android.support.v4.app.Fragment {
                         }
                     }
                 });
+    }
+
+    private void loadDataWithCache(boolean refresh) {
+        mDataService.getArticles(refresh).subscribe(new Subscriber<NYTWrapper>() {
+            @Override
+            public void onCompleted() {
+                Log.e("NYTDemo", "Done!!");
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.e("NYTDemo", e.getMessage());
+            }
+
+            @Override
+            public void onNext(NYTWrapper nytWrapper) {
+                if (nytWrapper == null || nytWrapper.getResults() == null) {
+                    return;
+                }
+                List<Result> results = nytWrapper.getResults();
+                for (Result result : results) {
+                    mCardAdapter.addData(result);
+                }
+            }
+        });
     }
 }
