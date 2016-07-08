@@ -23,11 +23,11 @@
         <activity
             android:name=".ui.NYTArticleDetailActivity"
             android:label="@string/title_nytarticle_detail"
-            android:parentActivityName=".ui.NYTArticleListActivity"
+            android:parentActivityName=".ui.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.seeyewmo.hillyougo.ui.NYTArticleListActivity" />
+                android:value="com.seeyewmo.hillyougo.ui.MainActivity" />
         </activity>
     </application>
 

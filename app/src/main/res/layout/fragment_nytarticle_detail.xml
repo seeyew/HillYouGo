@@ -8,15 +8,15 @@
     <!-- fresco:placeholderImage="@drawable/myPlaceholderImage"-->
 
     <TextView
-        android:id="@+id/nytarticle_detail"
-        style="?android:attr/textAppearanceLarge"
+        android:id="@+id/article_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp"
-        android:textIsSelectable="true"
+        android:textStyle="bold"
+        android:textSize="22dp"
         tools:context="com.seeyewmo.hillyougo.ui.NYTArticleDetailFragment" />
     <TextView
-        android:id="@+id/nyarticle_date"
+        android:id="@+id/article_date"
         style="?android:attr/textAppearanceSmall"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -24,14 +24,14 @@
         android:paddingTop="5dp"
         android:paddingBottom="5dp"
         tools:context="com.seeyewmo.hillyougo.ui.NYTArticleDetailFragment"
-        android:layout_below="@id/nytarticle_detail" />
+        android:layout_below="@id/article_title" />
 
     <com.facebook.drawee.view.SimpleDraweeView
         android:id="@+id/sdvImage"
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:layout_alignParentLeft="true"
-        android:layout_below="@id/nyarticle_date"
+        android:layout_below="@id/article_date"
         fresco:actualImageScaleType="centerCrop"/>
 </RelativeLayout>
 

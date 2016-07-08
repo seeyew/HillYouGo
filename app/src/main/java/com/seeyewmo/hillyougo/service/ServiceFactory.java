@@ -59,23 +59,4 @@ public class ServiceFactory {
                 }).build();
     }
 
-    /*
-    String apiKey = "YOUR-API-KEY-HERE";
-
-    RequestInterceptor requestInterceptor = new RequestInterceptor() {
-        @Override
-        public void intercept(RequestFacade request) {
-            request.addQueryParam("apikey", apiKey);
-        }
-    };
-    // Add the interceptor to OkHttpClient
-    OkHttpClient client = new OkHttpClient();
-    client.interceptors().add(requestInterceptor);
-
-    Retrofit retrofit = new Retrofit.Builder()
-               .client(client)
-               .baseUrl("http://api.rottentomatoes.com/api/public/v1.0")
-               .build();
-
-    */
 }

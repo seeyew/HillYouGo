@@ -20,8 +20,6 @@ import butterknife.ButterKnife;
  */
 public class SectionsCarouselFragment extends android.support.v4.app.Fragment{
     @Bind(R.id.tpi_header)
-    //protected TitlePageIndicator indicator;
-    //protected TabPageIndicator indicator;
     protected SlidingTabLayout indicator;
 
     @Bind(R.id.vp_pages)

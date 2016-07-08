@@ -2,8 +2,8 @@ package com.seeyewmo.hillyougo.ui;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,10 +16,14 @@ import com.seeyewmo.hillyougo.model.Result;
 import com.seeyewmo.hillyougo.service.DataHelper;
 import com.seeyewmo.hillyougo.ui.utils.ImageUtil;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 /**
  * A fragment representing a single NYTArticle detail screen.
  */
 public class NYTArticleDetailFragment extends Fragment {
+    private static final String TAG = "NYTDetailFragment";
     /**
      * The fragment argument representing the item ID that this fragment
      * represents.
@@ -27,10 +31,18 @@ public class NYTArticleDetailFragment extends Fragment {
     public static final String ARG_ITEM_ID = "item_id";
     public static final String ARG_ITEM_SECTION  = "item_section";
 
-    private Result mItem;
-
+    private Result mArticle;
     private int mItemId;
     private String mSection;
+
+    @Bind(R.id.article_date)
+    TextView mArticleDate;
+
+    @Bind(R.id.article_title)
+    TextView mArticleTitle;
+
+    @Bind(R.id.sdvImage)
+    SimpleDraweeView mDraweeView;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -49,49 +61,38 @@ public class NYTArticleDetailFragment extends Fragment {
         } else if (getArguments().containsKey(ARG_ITEM_ID) && getArguments().containsKey(ARG_ITEM_SECTION)) {
             mItemId = getArguments().getInt(ARG_ITEM_ID);
             mSection = getArguments().getString(ARG_ITEM_SECTION);
-            /*Activity activity = this.getActivity();
 
-            if (appBarLayout != null && mItem != null) {
-                appBarLayout.setTitle(getArguments().getString(ARG_ITEM_SECTION));
-            }*/
         }
-
-        /*CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) getActivity().findViewById(R.id.toolbar_layout);
-
-        if (appBarLayout != null && mItem != null) {
-            appBarLayout.setTitle(mSection);
-        }*/
 
         //TODO: This is a sync call, consider moving to another thread in the future
-        mItem = DataHelper.getInstance(getContext()).getOneArticle(
+        mArticle = DataHelper.getInstance(getContext()).getOneArticle(
                 mSection, mItemId);
 
-
-        if (mItem != null) {
-            Log.i("DataHelper", "Found it");
-        } else {
-            //need to handle this
+        if (mArticle != null) {
+            //TODO: What now?
+            Log.e(TAG, "Can't load the article");
         }
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_nytarticle_detail, container, false);
+        return inflater.inflate(R.layout.fragment_nytarticle_detail, container, false);
+    }
 
-        if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.nytarticle_detail)).setText(mItem.getTitle());
-            ((TextView) rootView.findViewById(R.id.nyarticle_date)).setText(mItem.getPublishedDate());
-            final String urlToPhoto = ImageUtil.getBestPhotoUrlForArticle(mItem,getDisplayMetrics().widthPixels);
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        ButterKnife.bind(this, getView());
+        if (mArticle != null) {
+            mArticleTitle.setText(mArticle.getTitle());
+            mArticleDate.setText(mArticle.getPublishedDate());
+            final String urlToPhoto = ImageUtil.getBestPhotoUrlForArticle(mArticle);
             if (urlToPhoto != null && !urlToPhoto.isEmpty()) {
                 Uri imageUri = Uri.parse(urlToPhoto);
-                SimpleDraweeView draweeView = (SimpleDraweeView) rootView.findViewById(R.id.sdvImage);
-                draweeView.setImageURI(imageUri);
+                mDraweeView.setImageURI(imageUri);
             }
         }
-
-        return rootView;
     }
 
     @Override
@@ -102,12 +103,12 @@ public class NYTArticleDetailFragment extends Fragment {
         outState.putString(NYTArticleDetailFragment.ARG_ITEM_SECTION, mSection);
     }
 
+    /*
     private DisplayMetrics getDisplayMetrics() {
         DisplayMetrics displaymetrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-        /*int height = displaymetrics.heightPixels;
-        int width = displaymetrics.widthPixels;*/
+
         return displaymetrics;
-    }
+    }*/
 
 }

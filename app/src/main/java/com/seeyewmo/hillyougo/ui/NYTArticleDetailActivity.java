@@ -11,10 +11,7 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.seeyewmo.hillyougo.R;
 
 /**
- * An activity representing a single NYTArticle detail screen. This
- * activity is only used narrow width devices. On tablet-size devices,
- * item details are presented side-by-side with a list of items
- * in a {@link NYTArticleListActivity}.
+ * An activity representing a single NYTArticle detail screen.
  */
 public class NYTArticleDetailActivity extends AppCompatActivity {
 

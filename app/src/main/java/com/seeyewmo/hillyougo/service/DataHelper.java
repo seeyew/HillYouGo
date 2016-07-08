@@ -29,7 +29,7 @@ import rx.schedulers.Schedulers;
  * Created by seeyew on 7/7/16.
  */
 public class DataHelper {
-
+    private static String TAG = "DataHelper";
     private static DataHelper sInstance;
 
     public static synchronized DataHelper getInstance(Context context) {
@@ -119,27 +119,19 @@ public class DataHelper {
     }
 
     private void cacheInMemory(String section, NYTWrapper nytWrapper) {
-        Log.i("DataHelper", "Cache In Memory");
         synchronized (sectionToNYTArticlesList) {
             sectionToNYTArticlesList.put(section, nytWrapper);
         }
     }
 
     private void cacheOnDisk(String section, NYTWrapper nytWrapper) {
-        Log.i("DataHelper", "Cache on Disk");
         try {
             File file = new File(mCacheDir, section);
             file.delete();
             String jsonInString = mapper.writeValueAsString(nytWrapper);
-            Log.i("DataHelper", "JsonInString:" + jsonInString);
             mapper.writeValue(file, nytWrapper);
-            Log.i("DataHelper", "writeDisk Succeeded!");
         } catch (IOException e) {
-            Log.e("DataHelper", "writeDisk failed" + e);
-            e.printStackTrace();
-        } catch (Exception e) {
-            Log.e("DataHelper", "writeDisk failed" + e);
-            e.printStackTrace();
+            Log.e(TAG, "CacheOnDisk failed",e);
         }
     }
 
@@ -179,13 +171,10 @@ public class DataHelper {
         try {
             File file = new File(mCacheDir, section);
             if (!file.exists()) {
-                Log.i("DataHelper", "File doesn't exists");
                 return null;
             }
             //Read text from file
             StringBuilder text = new StringBuilder();
-
-            try {
                 BufferedReader br = new BufferedReader(new FileReader(file));
                 String line;
 
@@ -194,11 +183,6 @@ public class DataHelper {
                     text.append('\n');
                 }
                 br.close();
-                Log.i("DataHelper", "String in file pre read: " + text.toString());
-            } catch (IOException e) {
-                //You'll need to add proper error handling here
-                Log.e("DataHelper", "stringbuilder" + e);
-            }
 
             return mapper.readValue(file, NYTWrapper.class);
         } catch (IOException e) {
@@ -214,7 +198,6 @@ public class DataHelper {
      * @param section
      */
     private void downloadFromNYT(final String section) {
-        Log.i("DataHelper", "Downloading from NYT on thread:" + Thread.currentThread().getName());
         service.getArticles(section, 7)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
@@ -227,7 +210,6 @@ public class DataHelper {
                 }).observeOn(Schedulers.io()).doOnNext(new Action1<NYTWrapper>() {
             @Override
             public void call(NYTWrapper nytWrapper) {
-                Log.i("DataHelper", "Downloading from NYT complete");
                 //store in memory
                 cacheInMemory(section, nytWrapper);
                 //store on disk
@@ -242,12 +224,11 @@ public class DataHelper {
 
             @Override
             public void onError(Throwable e) {
-                Log.i("DataHelper", "Error in network call " + e);
+                Log.e(TAG, "Download From NYT failed" ,e);
             }
 
             @Override
             public void onNext(NYTWrapper nytWrapper) {
-                Log.i("DataHelper", "Download complete calling onNext()");
                 //Notify
                 onNextForAllSubscribers(section, nytWrapper);
             }

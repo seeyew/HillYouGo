@@ -6,8 +6,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.seeyewmo.hillyougo.R;
 import com.seeyewmo.hillyougo.model.Result;
+import com.seeyewmo.hillyougo.ui.utils.ImageUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,19 +65,19 @@ public class NYTCardAdapter extends RecyclerView.Adapter<NYTCardAdapter.ViewHold
 
     class ViewHolder extends RecyclerView.ViewHolder {
         public TextView login;
-        //public TextView repos;
+        public SimpleDraweeView draweeView;
         public TextView blog;
 
         public ViewHolder(View itemView) {
             super(itemView);
             login = (TextView) itemView.findViewById(R.id.login);
-            //repos = (TextView) itemView.findViewById(R.id.repos);
+            draweeView = (SimpleDraweeView) itemView.findViewById(R.id.recycler_view_image);
             blog = (TextView) itemView.findViewById(R.id.blog);
         }
 
         public void bind(final int position, final Result result, final OnItemClickListener listener) {
             login.setText(result.getTitle());
-            //repos.setText(result.getAbstract());
+            draweeView.setImageURI(ImageUtil.getBestPhotoUrlForArticle(result));
             blog.setText(result.getPublishedDate());
 
             //Todo Let's use Picasso for pictures!

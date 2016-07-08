@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.facebook.drawee.backends.pipeline.Fresco;
 import com.seeyewmo.hillyougo.R;
 
 public class MainActivity extends AppCompatActivity
@@ -21,6 +22,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fresco.initialize(this);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -99,8 +101,6 @@ public class MainActivity extends AppCompatActivity
             mSectionCarouselFragment.setCurrentItem(3);
         } else if (id == R.id.nav_health) {
             mSectionCarouselFragment.setCurrentItem(4);
-        } else if (id == R.id.nav_send) {
-
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

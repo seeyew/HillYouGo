@@ -13,20 +13,20 @@ public class ImageUtil {
     private static final String IMAGE = "image";
     private ImageUtil() {}
 
-    public static String getBestPhotoUrlForArticle(Result article, int width) {
+    public static String getBestPhotoUrlForArticle(Result article) {
         //String url = null;
         final List<Medium> mediumList = article.getMedia();
         for(Medium medium : mediumList) {
             //TODO: For now always pick the first image
             if(medium.getType().equalsIgnoreCase(IMAGE)) {
-                MediaMetadatum mediaMetadatum =  getClosestMediaMetadatumPhoto(medium, width);
+                MediaMetadatum mediaMetadatum =  getClosestMediaMetadatumPhoto(medium);
                 return mediaMetadatum != null? mediaMetadatum.getUrl() : null;
             }
         }
         return null;
     }
 
-    private static MediaMetadatum getClosestMediaMetadatumPhoto(Medium medium, int width) {
+    private static MediaMetadatum getClosestMediaMetadatumPhoto(Medium medium) {
         //TODO: Get photo with the closest width instead of the biggest one
         MediaMetadatum closestMedia = null;
         Long biggest = Long.MIN_VALUE;

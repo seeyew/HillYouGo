@@ -16,7 +16,6 @@ import com.seeyewmo.hillyougo.adapter.NYTCardAdapter;
 import com.seeyewmo.hillyougo.model.NYTWrapper;
 import com.seeyewmo.hillyougo.model.Result;
 import com.seeyewmo.hillyougo.service.DataHelper;
-import com.seeyewmo.hillyougo.service.DataService;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -27,8 +26,7 @@ import rx.Subscriber;
  */
 public class SectionFragment extends android.support.v4.app.Fragment {
     public static final String FRAGMENT_SECTION_PATH = "section_path";
-    private String mPath;
-    private DataService mDataService;
+    private String mSection;
     private DataHelper mDataHelper;
 
     @Bind(R.id.recycler_view)
@@ -70,7 +68,7 @@ public class SectionFragment extends android.support.v4.app.Fragment {
             public void onItemClick(int position, Result item) {
                 Intent intent = new Intent(getContext(), NYTArticleDetailActivity.class);
                 intent.putExtra(NYTArticleDetailFragment.ARG_ITEM_ID, position);
-                intent.putExtra(NYTArticleDetailFragment.ARG_ITEM_SECTION, mPath);
+                intent.putExtra(NYTArticleDetailFragment.ARG_ITEM_SECTION, mSection);
                 getContext().startActivity(intent);
             }
         });
@@ -98,8 +96,8 @@ public class SectionFragment extends android.support.v4.app.Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Log.i("DataHelper", "!!!!Saving section!!!! " + mPath);
-        outState.putString(FRAGMENT_SECTION_PATH, mPath);
+        Log.i("DataHelper", "!!!!Saving section!!!! " + mSection);
+        outState.putString(FRAGMENT_SECTION_PATH, mSection);
     }
 
     @Override
@@ -107,10 +105,10 @@ public class SectionFragment extends android.support.v4.app.Fragment {
         super.onActivityCreated(savedInstanceState);
 
         if (savedInstanceState != null) {
-            mPath = savedInstanceState.getString(FRAGMENT_SECTION_PATH);
+            mSection = savedInstanceState.getString(FRAGMENT_SECTION_PATH);
         } else if (getArguments() != null) {
             Bundle args = getArguments();
-            mPath = args.getString(FRAGMENT_SECTION_PATH);
+            mSection = args.getString(FRAGMENT_SECTION_PATH);
         }
         mDataHelper = DataHelper.getInstance(getActivity());
         loadData(false);
@@ -118,7 +116,7 @@ public class SectionFragment extends android.support.v4.app.Fragment {
 
     private void loadData(boolean isRefresh) {
 
-        mDataHelper.getArticles(mPath, isRefresh).subscribe(new Subscriber<NYTWrapper>() {
+        mDataHelper.getArticles(mSection, isRefresh).subscribe(new Subscriber<NYTWrapper>() {
             @Override
             public void onCompleted() {
 
@@ -131,8 +129,10 @@ public class SectionFragment extends android.support.v4.app.Fragment {
 
             @Override
             public void onNext(NYTWrapper nytWrapper) {
-                if (nytWrapper != null && nytWrapper.getResults() != null) {
-                    mCardAdapter.addAllData(nytWrapper.getResults());
+                if (getActivity() != null) {
+                    if (nytWrapper != null && nytWrapper.getResults() != null) {
+                        mCardAdapter.addAllData(nytWrapper.getResults());
+                    }
                 }
             }
         });
