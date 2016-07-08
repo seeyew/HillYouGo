@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <LinearLayout
+    <!--<LinearLayout
         android:id="@+id/buttons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -28,14 +28,15 @@
             android:textColor="#ffffff"
             android:text="Fetch" />
 
-    </LinearLayout>
+    </LinearLayout> -->
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:paddingTop="15dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/buttons"/>
+        />
+    <!-- android:layout_below="@id/buttons" -->
 <!--
     <TextView
         android:id="@android:id/empty"

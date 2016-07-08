@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import com.seeyewmo.hillyougo.R;
 import com.seeyewmo.hillyougo.adapter.NYTCardAdapter;
@@ -34,12 +33,6 @@ public class SectionFragment extends android.support.v4.app.Fragment {
 
     @Bind(R.id.recycler_view)
     protected RecyclerView mRecyclerView;
-
-    @Bind(R.id.button_clear)
-    protected Button mButtonClear;
-
-    @Bind(R.id.button_fetch)
-    protected Button mButtonFetch;
 
     private NYTCardAdapter mCardAdapter;
 
@@ -85,28 +78,21 @@ public class SectionFragment extends android.support.v4.app.Fragment {
 
         mRecyclerView.setAdapter(mCardAdapter);
 
-        mButtonClear.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                mCardAdapter.clear();
-            }
-        });
-
-        mButtonFetch.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                //loadDataWithCache(true);
-                getData(true);
-            }
-        });
-
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_refresh) {
-            getData(true);
-            return true;
+        int itemId = item.getItemId();
+        switch (itemId) {
+            case R.id.action_refresh:
+                loadData(true);
+                return true;
+            case R.id.action_clear:
+                mCardAdapter.clear();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -126,15 +112,11 @@ public class SectionFragment extends android.support.v4.app.Fragment {
             Bundle args = getArguments();
             mPath = args.getString(FRAGMENT_SECTION_PATH);
         }
-        mButtonClear.setText(mPath);
-        Log.i("DataHelper", "====This section is " + mPath);
-        //mDataService = new DataService(this.getActivity(), mPath, 7);
         mDataHelper = DataHelper.getInstance(getActivity());
-        //loadDataWithCache(false);
-        getData(false);
+        loadData(false);
     }
 
-    private void getData(boolean isRefresh) {
+    private void loadData(boolean isRefresh) {
 
         mDataHelper.getArticles(mPath, isRefresh).subscribe(new Subscriber<NYTWrapper>() {
             @Override

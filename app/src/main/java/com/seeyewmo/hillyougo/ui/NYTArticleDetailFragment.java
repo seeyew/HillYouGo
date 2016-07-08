@@ -16,13 +16,8 @@ import com.seeyewmo.hillyougo.model.Result;
 import com.seeyewmo.hillyougo.service.DataHelper;
 import com.seeyewmo.hillyougo.ui.utils.ImageUtil;
 
-import org.w3c.dom.Text;
-
 /**
  * A fragment representing a single NYTArticle detail screen.
- * This fragment is either contained in a {@link NYTArticleListActivity}
- * in two-pane mode (on tablets) or a {@link NYTArticleDetailActivity}
- * on handsets.
  */
 public class NYTArticleDetailFragment extends Fragment {
     /**
