@@ -1,9 +1,7 @@
 package com.seeyewmo.hillyougo.ui;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -12,7 +10,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.seeyewmo.hillyougo.R;
 
@@ -28,14 +25,14 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
-        });
+        });*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -47,60 +44,6 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         initScreen();
-
-        /**
-         * Set up Android CardView/RecycleView
-         */
-        /*RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        final NYTCardAdapter mCardAdapter = new NYTCardAdapter();
-        mRecyclerView.setAdapter(mCardAdapter);*/
-
-        /**
-         * START: button set up
-         */
-        /*Button bClear = (Button) findViewById(R.id.button_clear);
-        Button bFetch = (Button) findViewById(R.id.button_fetch);
-        bClear.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                mCardAdapter.clear();
-            }
-        });
-
-        bFetch.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                NYTService service = ServiceFactory.createRetrofitService(NYTService.class, NYTService.SERVICE_ENDPOINT);
-                service.getArticles("politics", 1)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Subscriber<NYTResponse>() {
-                            @Override
-                            public void onCompleted() {
-                                Log.e("NYTDemo", "Done!!");
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-                                Log.e("NYTDemo", e.getMessage());
-                            }
-
-                            @Override
-                            public void onNext(NYTResponse nytWrapper) {
-                                List<Result> results = nytWrapper.getResults();
-                                for (Result result : results) {
-                                    mCardAdapter.addData(result);
-                                }
-                            }
-                        });
-                }
-
-        });*/
-
-
-        /**
-         * END: button set up
-         */
     }
 
     @Override
