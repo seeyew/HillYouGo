@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -53,5 +54,13 @@ public class SectionsCarouselFragment extends android.support.v4.app.Fragment{
 
     public void setCurrentItem(int position) {
         pager.setCurrentItem(position);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(mSectionCarouselAdapter.getItem(pager.getCurrentItem()).onOptionsItemSelected(item)) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

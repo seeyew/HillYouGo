@@ -132,6 +132,10 @@ public class MainActivity extends AppCompatActivity
             return true;
         }
 
+        if (mSectionCarouselFragment.onOptionsItemSelected(item)){
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -164,6 +168,7 @@ public class MainActivity extends AppCompatActivity
     private void initScreen() {
         final FragmentManager fragmentManager = getSupportFragmentManager();
         mSectionCarouselFragment = new SectionsCarouselFragment();
+
         fragmentManager.beginTransaction()
                 .replace(R.id.container, mSectionCarouselFragment)
                 .commit();

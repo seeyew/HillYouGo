@@ -1,6 +1,7 @@
 package com.seeyewmo.hillyougo.adapter;
 
 import android.content.res.Resources;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -27,26 +28,26 @@ public class SectionsCarouselAdapter extends FragmentPagerAdapter {
     public SectionsCarouselAdapter(final Resources resources, final FragmentManager fragmentManager) {
         super(fragmentManager);
         this.resources = resources;
-        //initFragmentSections();
+        initFragmentSections();
     }
 
     private void initFragmentSections() {
-        /*Fragment sectionFragment;
+        Fragment sectionFragment;
         Bundle bundle;
         int position = 0;
         for (String section : NYTService.ALL_SECTIONS) {
             mSectionFragments.add(SectionFragment.newInstance(NYTService.ALL_SECTIONS[position++]));
-        }*/
+        }
     }
 
     @Override
     public Fragment getItem(int position) {
-        return SectionFragment.newInstance(NYTService.ALL_SECTIONS[position]);
-        /*
+        //return SectionFragment.newInstance(NYTService.ALL_SECTIONS[position]);
+
         if (position < mSectionFragments.size()) {
             return mSectionFragments.get(position);
         }
-        return null;*/
+        return null;
     }
 
     @Override

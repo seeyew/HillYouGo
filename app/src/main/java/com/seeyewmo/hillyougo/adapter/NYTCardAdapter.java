@@ -14,7 +14,7 @@ import java.util.List;
 
 public class NYTCardAdapter extends RecyclerView.Adapter<NYTCardAdapter.ViewHolder> {
     public interface OnItemClickListener {
-        void onItemClick(Result item);
+        void onItemClick(int position, Result item);
     }
     List<Result> mItems;
     OnItemClickListener mOnItemClickListener;
@@ -53,7 +53,7 @@ public class NYTCardAdapter extends RecyclerView.Adapter<NYTCardAdapter.ViewHold
     public void onBindViewHolder(ViewHolder viewHolder, int i) {
         Result result = mItems.get(i);
 
-        viewHolder.bind(result, mOnItemClickListener);
+        viewHolder.bind(i,result, mOnItemClickListener);
     }
 
     @Override
@@ -73,7 +73,7 @@ public class NYTCardAdapter extends RecyclerView.Adapter<NYTCardAdapter.ViewHold
             blog = (TextView) itemView.findViewById(R.id.blog);
         }
 
-        public void bind(final Result result, final OnItemClickListener listener) {
+        public void bind(final int position, final Result result, final OnItemClickListener listener) {
             login.setText(result.getTitle());
             repos.setText(result.getAbstract());
             blog.setText(result.getUrl());
@@ -82,7 +82,7 @@ public class NYTCardAdapter extends RecyclerView.Adapter<NYTCardAdapter.ViewHold
             //Picasso.with(itemView.getContext()).load(item.imageUrl).into(image);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
-                    listener.onItemClick(result);
+                    listener.onItemClick(position, result);
                 }
             });
         }

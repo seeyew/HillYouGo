@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.seeyewmo.hillyougo.model.NYTResponse;
 import com.seeyewmo.hillyougo.model.NYTWrapper;
+import com.seeyewmo.hillyougo.model.Result;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -61,6 +62,17 @@ public class DataHelper {
         mapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         mCacheDir = context.getCacheDir();
+    }
+
+    public Result getOneArticle(final String section, int position) {
+        synchronized (sectionToNYTArticlesList) {
+            NYTWrapper nytWrapper = sectionToNYTArticlesList.get(section);
+            if (nytWrapper != null && nytWrapper.getResults() != null && nytWrapper.getResults().size() > position) {
+                Log.i("DataHelper", "Returning one article");
+                return nytWrapper.getResults().get(position);
+            }
+        }
+        return null;
     }
 
     public Observable<NYTWrapper> getArticles(final String section, boolean refresh) {

@@ -2,10 +2,12 @@ package com.seeyewmo.hillyougo.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -16,8 +18,6 @@ import com.seeyewmo.hillyougo.model.NYTWrapper;
 import com.seeyewmo.hillyougo.model.Result;
 import com.seeyewmo.hillyougo.service.DataHelper;
 import com.seeyewmo.hillyougo.service.DataService;
-
-import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -52,6 +52,12 @@ public class SectionFragment extends android.support.v4.app.Fragment {
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_section, null);
@@ -68,9 +74,10 @@ public class SectionFragment extends android.support.v4.app.Fragment {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
         mCardAdapter = new NYTCardAdapter(new NYTCardAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(Result item) {
+            public void onItemClick(int position, Result item) {
                 Intent intent = new Intent(getContext(), NYTArticleDetailActivity.class);
-                intent.putExtra(NYTArticleDetailFragment.ARG_ITEM_ID, "1");
+                intent.putExtra(NYTArticleDetailFragment.ARG_ITEM_ID, position);
+                intent.putExtra(NYTArticleDetailFragment.ARG_ITEM_SECTION, mPath);
                 getContext().startActivity(intent);
             }
         });
@@ -91,6 +98,15 @@ public class SectionFragment extends android.support.v4.app.Fragment {
             }
         });
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_refresh) {
+            getData(true);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -119,7 +135,7 @@ public class SectionFragment extends android.support.v4.app.Fragment {
     }
 
     private void getData(boolean isRefresh) {
-        mButtonClear.setText(mPath);
+
         mDataHelper.getArticles(mPath, isRefresh).subscribe(new Subscriber<NYTWrapper>() {
             @Override
             public void onCompleted() {
@@ -136,39 +152,6 @@ public class SectionFragment extends android.support.v4.app.Fragment {
                 if (nytWrapper != null && nytWrapper.getResults() != null) {
                     mCardAdapter.addAllData(nytWrapper.getResults());
                 }
-            }
-        });
-    }
-
-
-    private void loadDataWithCache(boolean refresh) {
-        //TODO: Total hack, we should only have on observable
-        //TODO: Need to unsubscribe
-        mDataService.getArticles(refresh).subscribe(new Subscriber<NYTWrapper>() {
-            @Override
-            public void onCompleted() {
-                Log.e("NYTDemo", "Done!!");
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                Log.e("NYTDemo", e.getMessage());
-            }
-
-            @Override
-            public void onNext(NYTWrapper nytWrapper) {
-                if (nytWrapper == null || nytWrapper.getResults() == null) {
-                    return;
-                }
-                List<Result> results = nytWrapper.getResults();
-                if (results != null) {
-                    mCardAdapter.addAllData(results);
-                }
-                if (!nytWrapper.isUpToDate()) {
-                    Log.i("SectionFragment", "Calling update because data is stale");
-                    loadDataWithCache(true);
-                }
-
             }
         });
     }
