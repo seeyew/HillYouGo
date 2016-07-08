@@ -47,7 +47,7 @@ public class DataHelper {
     private ObjectMapper mapper;
     private File mCacheDir;
     private final Map<String, NYTWrapper> sectionToNYTArticlesList;
-    private Map<String,Set<Subscriber<? super NYTWrapper>>> mSubscribers;
+    private Map<String, Set<Subscriber<? super NYTWrapper>>> mSubscribers;
     private NYTService service = ServiceFactory.createRetrofitService(NYTService.class,
             NYTService.SERVICE_ENDPOINT);
 
@@ -217,7 +217,7 @@ public class DataHelper {
         Log.i("DataHelper", "Downloading from NYT on thread:" + Thread.currentThread().getName());
         service.getArticles(section, 7)
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOn(Schedulers.io())
                 .map(new Func1<NYTResponse, NYTWrapper>() {
                     @Override
                     public NYTWrapper call(NYTResponse nytResponse) {
@@ -242,7 +242,7 @@ public class DataHelper {
 
             @Override
             public void onError(Throwable e) {
-
+                Log.i("DataHelper", "Error in network call " + e);
             }
 
             @Override

@@ -63,20 +63,20 @@ public class NYTCardAdapter extends RecyclerView.Adapter<NYTCardAdapter.ViewHold
 
     class ViewHolder extends RecyclerView.ViewHolder {
         public TextView login;
-        public TextView repos;
+        //public TextView repos;
         public TextView blog;
 
         public ViewHolder(View itemView) {
             super(itemView);
             login = (TextView) itemView.findViewById(R.id.login);
-            repos = (TextView) itemView.findViewById(R.id.repos);
+            //repos = (TextView) itemView.findViewById(R.id.repos);
             blog = (TextView) itemView.findViewById(R.id.blog);
         }
 
         public void bind(final int position, final Result result, final OnItemClickListener listener) {
             login.setText(result.getTitle());
-            repos.setText(result.getAbstract());
-            blog.setText(result.getUrl());
+            //repos.setText(result.getAbstract());
+            blog.setText(result.getPublishedDate());
 
             //Todo Let's use Picasso for pictures!
             //Picasso.with(itemView.getContext()).load(item.imageUrl).into(image);
