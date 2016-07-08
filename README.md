@@ -31,9 +31,12 @@ from a template project with Dagger and RxAndroid took too much time to setup. I
  1. Also, we should add code to get the most appropriate photo for the given screen size.
 1. The simple cache that I build can be improved or replaced. It doesn't cover all cases. I could have gone the SQLite route but decided against it as our need is simple.
   (But SQLite would have been useful when I needed one article)
-  
+4. Code structure, I just split all the different components into sub-packages, will more time, some refactoring is necessary.
+5. Themes - didn't get a chance to create a theme properly. So that should be completed.
+6. Tests!!
 
 ### Unsupported
 1. Multiple screen sizes 
 2. Master-Detail in Tablets
+3. Getting Thumbnails
 
