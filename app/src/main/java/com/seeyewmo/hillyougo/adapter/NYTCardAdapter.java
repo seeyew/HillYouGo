@@ -13,19 +13,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NYTCardAdapter extends RecyclerView.Adapter<NYTCardAdapter.ViewHolder> {
+    public interface OnItemClickListener {
+        void onItemClick(Result item);
+    }
     List<Result> mItems;
+    OnItemClickListener mOnItemClickListener;
 
-    public NYTCardAdapter() {
+    public NYTCardAdapter(OnItemClickListener listener) {
         super();
+        mOnItemClickListener = listener;
         mItems = new ArrayList<Result>();
-        /*Github g1 = new Github();
-        g1.setLogin("Test");
-        g1.setBlog("Blog");
-        Github g2 = new Github();
-        g2.setLogin("Test2");
-        g2.setBlog("Blog2");
-        mItems.add(g1);
-        mItems.add(g2);*/
     }
 
     public void addAllData(List<Result> results) {
@@ -55,9 +52,8 @@ public class NYTCardAdapter extends RecyclerView.Adapter<NYTCardAdapter.ViewHold
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int i) {
         Result result = mItems.get(i);
-        viewHolder.login.setText(result.getTitle());
-        viewHolder.repos.setText(result.getAbstract());
-        viewHolder.blog.setText(result.getUrl());
+
+        viewHolder.bind(result, mOnItemClickListener);
     }
 
     @Override
@@ -75,6 +71,20 @@ public class NYTCardAdapter extends RecyclerView.Adapter<NYTCardAdapter.ViewHold
             login = (TextView) itemView.findViewById(R.id.login);
             repos = (TextView) itemView.findViewById(R.id.repos);
             blog = (TextView) itemView.findViewById(R.id.blog);
+        }
+
+        public void bind(final Result result, final OnItemClickListener listener) {
+            login.setText(result.getTitle());
+            repos.setText(result.getAbstract());
+            blog.setText(result.getUrl());
+
+            //Todo Let's use Picasso for pictures!
+            //Picasso.with(itemView.getContext()).load(item.imageUrl).into(image);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) {
+                    listener.onItemClick(result);
+                }
+            });
         }
     }
 }

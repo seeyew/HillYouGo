@@ -1,6 +1,7 @@
 package com.seeyewmo.hillyougo.ui;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +26,14 @@ public class SectionsCarouselFragment extends android.support.v4.app.Fragment{
     @Bind(R.id.vp_pages)
     protected ViewPager pager;
 
+    private SectionsCarouselAdapter mSectionCarouselAdapter;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mSectionCarouselAdapter = new SectionsCarouselAdapter(getResources(), getChildFragmentManager());
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_section_carousel, container, false);
@@ -36,7 +45,7 @@ public class SectionsCarouselFragment extends android.support.v4.app.Fragment{
 
         ButterKnife.bind(this, getView());
 
-        pager.setAdapter(new SectionsCarouselAdapter(getResources(), getChildFragmentManager()));
+        pager.setAdapter(mSectionCarouselAdapter);
         indicator.setDistributeEvenly(true);
         indicator.setViewPager(pager);
         pager.setCurrentItem(0);

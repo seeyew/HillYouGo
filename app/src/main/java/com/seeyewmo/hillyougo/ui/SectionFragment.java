@@ -1,5 +1,6 @@
 package com.seeyewmo.hillyougo.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,6 +14,7 @@ import com.seeyewmo.hillyougo.R;
 import com.seeyewmo.hillyougo.adapter.NYTCardAdapter;
 import com.seeyewmo.hillyougo.model.NYTWrapper;
 import com.seeyewmo.hillyougo.model.Result;
+import com.seeyewmo.hillyougo.service.DataHelper;
 import com.seeyewmo.hillyougo.service.DataService;
 
 import java.util.List;
@@ -28,6 +30,7 @@ public class SectionFragment extends android.support.v4.app.Fragment {
     public static final String FRAGMENT_SECTION_PATH = "section_path";
     private String mPath;
     private DataService mDataService;
+    private DataHelper mDataHelper;
 
     @Bind(R.id.recycler_view)
     protected RecyclerView mRecyclerView;
@@ -38,7 +41,15 @@ public class SectionFragment extends android.support.v4.app.Fragment {
     @Bind(R.id.button_fetch)
     protected Button mButtonFetch;
 
-    final NYTCardAdapter mCardAdapter = new NYTCardAdapter();
+    private NYTCardAdapter mCardAdapter;
+
+    public static SectionFragment newInstance(String path) {
+        SectionFragment sectionFragment = new SectionFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString(SectionFragment.FRAGMENT_SECTION_PATH, path);
+        sectionFragment.setArguments(bundle);
+        return sectionFragment;
+    }
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
@@ -55,6 +66,16 @@ public class SectionFragment extends android.support.v4.app.Fragment {
 
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
+        mCardAdapter = new NYTCardAdapter(new NYTCardAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(Result item) {
+                Intent intent = new Intent(getContext(), NYTArticleDetailActivity.class);
+                intent.putExtra(NYTArticleDetailFragment.ARG_ITEM_ID, "1");
+                getContext().startActivity(intent);
+            }
+        });
+
+
         mRecyclerView.setAdapter(mCardAdapter);
 
         mButtonClear.setOnClickListener(new View.OnClickListener() {
@@ -65,7 +86,8 @@ public class SectionFragment extends android.support.v4.app.Fragment {
 
         mButtonFetch.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                loadDataWithCache(true);
+                //loadDataWithCache(true);
+                getData(true);
             }
         });
 
@@ -74,6 +96,7 @@ public class SectionFragment extends android.support.v4.app.Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        Log.i("DataHelper", "!!!!Saving section!!!! " + mPath);
         outState.putString(FRAGMENT_SECTION_PATH, mPath);
     }
 
@@ -87,9 +110,34 @@ public class SectionFragment extends android.support.v4.app.Fragment {
             Bundle args = getArguments();
             mPath = args.getString(FRAGMENT_SECTION_PATH);
         }
+        mButtonClear.setText(mPath);
+        Log.i("DataHelper", "====This section is " + mPath);
+        //mDataService = new DataService(this.getActivity(), mPath, 7);
+        mDataHelper = DataHelper.getInstance(getActivity());
+        //loadDataWithCache(false);
+        getData(false);
+    }
 
-        mDataService = new DataService(this.getActivity(), mPath, 7);
-        loadDataWithCache(false);
+    private void getData(boolean isRefresh) {
+        mButtonClear.setText(mPath);
+        mDataHelper.getArticles(mPath, isRefresh).subscribe(new Subscriber<NYTWrapper>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(NYTWrapper nytWrapper) {
+                if (nytWrapper != null && nytWrapper.getResults() != null) {
+                    mCardAdapter.addAllData(nytWrapper.getResults());
+                }
+            }
+        });
     }
 
 
