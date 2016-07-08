@@ -355,16 +355,4 @@ public class Result {
         this.additionalProperties.put(name, value);
     }
 
-    public MediaMetadatum getMediaPhotoUrl() {
-        List<Medium> mediumList = getMedia();
-
-        for(Medium medium : mediumList) {
-            //pick the first image
-            if(medium.getType().equalsIgnoreCase("image")) {
-               return medium.getClosestMediaMetadatumPhoto();
-            }
-        }
-        return null;
-    }
-
 }

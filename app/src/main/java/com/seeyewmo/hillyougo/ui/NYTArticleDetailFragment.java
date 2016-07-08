@@ -12,9 +12,11 @@ import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.seeyewmo.hillyougo.R;
-import com.seeyewmo.hillyougo.model.MediaMetadatum;
 import com.seeyewmo.hillyougo.model.Result;
 import com.seeyewmo.hillyougo.service.DataHelper;
+import com.seeyewmo.hillyougo.ui.utils.ImageUtil;
+
+import org.w3c.dom.Text;
 
 /**
  * A fragment representing a single NYTArticle detail screen.
@@ -86,18 +88,12 @@ public class NYTArticleDetailFragment extends Fragment {
         if (mItem != null) {
             ((TextView) rootView.findViewById(R.id.nytarticle_detail)).setText(mItem.getTitle());
             ((TextView) rootView.findViewById(R.id.nyarticle_date)).setText(mItem.getPublishedDate());
-            MediaMetadatum bestPhoto = mItem.getMediaPhotoUrl();
-            Uri imageUri = Uri.parse(bestPhoto.getUrl());//("https://i.imgur.com/tGbaZCY.jpg");
-            //this number should be changed once we figured out the size of the screen as well as
-            //the dimension of the photo
-
-            SimpleDraweeView draweeView = (SimpleDraweeView) rootView.findViewById(R.id.sdvImage);
-
-            //draweeView.setWi
-            //draweeView.setLayoutParams(layoutParams);
-            //GenericDraweeHierarchy hierarchy = draweeView.getHierarchy();
-            //hierarchy.setActualImageScaleType(ScalingUtils.ScaleType.FIT_XY);
-            draweeView.setImageURI(imageUri);
+            final String urlToPhoto = ImageUtil.getBestPhotoUrlForArticle(mItem,getDisplayMetrics().widthPixels);
+            if (urlToPhoto != null && !urlToPhoto.isEmpty()) {
+                Uri imageUri = Uri.parse(urlToPhoto);
+                SimpleDraweeView draweeView = (SimpleDraweeView) rootView.findViewById(R.id.sdvImage);
+                draweeView.setImageURI(imageUri);
+            }
         }
 
         return rootView;

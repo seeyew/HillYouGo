@@ -147,19 +147,4 @@ public class Medium {
     public void setAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
     }
-
-    public MediaMetadatum getClosestMediaMetadatumPhoto() {
-        Long biggest = Long.MIN_VALUE;
-        MediaMetadatum largestMedia = null;
-        for (MediaMetadatum mediaMetadatum : getMediaMetadata()) {
-            Long newWidth = mediaMetadatum.getWidth();
-            Long newHeight = mediaMetadatum.getHeight();
-            Long newSize = newWidth * newHeight;
-            if (newSize > biggest) {
-                biggest = newSize;
-                largestMedia = mediaMetadatum;
-            }
-        }
-        return largestMedia;
-    }
 }
