@@ -39,3 +39,5 @@ captures/
 # Keystore files
 *.jks
 
+app/libs/
+app/src/main/res/layout-w900dp/
