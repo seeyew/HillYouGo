@@ -33,6 +33,7 @@ public class DataService {
     }
     private Context mContext;
     private Cache mCache;
+    final PublishSubject<NYTWrapper> publishCacheOrWaitPublish = PublishSubject.create();
     private NYTService service = ServiceFactory.createRetrofitService(NYTService.class,
             NYTService.SERVICE_ENDPOINT);
 
@@ -66,7 +67,12 @@ public class DataService {
 //            }
 //        });
 
-        final PublishSubject<NYTWrapper> publishCacheOrWaitPublish = PublishSubject.create();
+
+        //What has to happen?
+        //return values if we have it
+        //if the value is out of date, get from server
+        //if we don't have any values, get from server
+        //if server returns error, let the client of this method know.
         //publishCacheOrWaitPublish subscribes to observable from local storage
         mCache.getArticles(section).subscribe(new Subscriber<NYTWrapper>() {
             @Override
@@ -92,6 +98,7 @@ public class DataService {
                     //Found a hit locally, so let's notify our subscribers!
                     publishCacheOrWaitPublish.onNext(nytWrapper);
                 }
+                //we do not return if there's no data locally, we'll wait from the download.
             }
         });
 
@@ -116,7 +123,13 @@ public class DataService {
             @Override
             public void onError(Throwable e) {
                 Log.e(TAG, "APIs to NYT failed " + e);
-                requestSubject.onNext(null);
+                RetrofitException error = (RetrofitException) e;
+                //TODO: How to we tell clients?
+                //requestSubject.onNext(null);
+                requestSubject.onError(e);
+                //TODO: convert it to another Throwable with messages that more client friendly?
+                //LoginErrorResponse response = error.getBodyAs(LoginErrorResponse.class);
+                publishCacheOrWaitPublish.onError(e);
             }
 
             @Override

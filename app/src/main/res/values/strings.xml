@@ -8,6 +8,7 @@
     <string name="action_refresh">Refresh</string>
     <string name="action_clear">Clear</string>
     <string name="data_updated">Data Updated</string>
+    <string name="data_download_error">Data Error: %1$s</string>
     <string name="title_nytarticle_list">NYTArticles</string>
     <string name="title_nytarticle_detail">NYTArticle Detail</string>
 </resources>

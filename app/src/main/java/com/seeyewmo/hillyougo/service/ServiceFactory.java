@@ -11,7 +11,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
 public class ServiceFactory {
@@ -39,8 +38,9 @@ public class ServiceFactory {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .client(getOkHttpClientWithApiKey())
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                //.addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .addConverterFactory(JacksonConverterFactory.create(objectMapper))
+                .addCallAdapterFactory(RxErrorHandlingCallAdapterFactory.create())
                 .build();
         return retrofit.create(clazz);
 
@@ -52,7 +52,7 @@ public class ServiceFactory {
                     @Override
                     public Response intercept(Chain chain) throws IOException {
                         Request request = chain.request();
-                        HttpUrl url = request.url().newBuilder().addQueryParameter(NYTService.API_KEY_PARAM, NYTService.KEY).build();
+                        HttpUrl url = request.url().newBuilder().addQueryParameter(NYTService.API_KEY_PARAM, ""/*NYTService.KEY*/).build();
                         request = request.newBuilder().url(url).build();
                         return chain.proceed(request);
                     }

@@ -18,6 +18,7 @@ import com.seeyewmo.hillyougo.model.NYTWrapper;
 import com.seeyewmo.hillyougo.model.Result;
 import com.seeyewmo.hillyougo.service.DataHelper;
 import com.seeyewmo.hillyougo.service.DataService;
+import com.seeyewmo.hillyougo.service.RetrofitException;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -28,6 +29,7 @@ import rx.Subscription;
  * Created by seeyew on 7/7/16.
  */
 public class SectionFragment extends android.support.v4.app.Fragment {
+    private static final String TAG = "SectionFragment";
     public static final String FRAGMENT_SECTION_PATH = "section_path";
     private String mSection;
     private DataHelper mDataHelper;
@@ -148,7 +150,14 @@ public class SectionFragment extends android.support.v4.app.Fragment {
 
             @Override
             public void onError(Throwable e) {
+                Log.e(TAG, "Error in reading data from DataService " + e);
 
+                RetrofitException error = (RetrofitException) e;
+                //LoginErrorResponse response = error.getBodyAs(LoginErrorResponse.class);
+                //TODO: How to we tell clients?
+                //requestSubject.onNext(null);
+                //Also show error text or no data instead of the ListView
+                Snackbar.make(mRecyclerView, String.format(getResources().getString(R.string.data_download_error), e.getMessage()), Snackbar.LENGTH_LONG).show();
             }
 
             @Override
