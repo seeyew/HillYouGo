@@ -11,8 +11,9 @@ Exercise App that uses NYTimes APIs
 
 ### Installation and Run
 1. Download/Clone the repo code
-2. Set the ANDROID_HOME environment variable to your Android SDK folder or create a local.properties at the top level that sets sdk.dir to your Android SDK folder.
-3. run ./gradle installDebug
+1. Set the ANDROID_HOME environment variable to your Android SDK folder or create a local.properties at the top level that sets sdk.dir to your Android SDK folder.
+1. Enable USB debugging on your phone and plug it in. Alternatively, start an emulator!
+1. run ./gradle installDebug
 
 ### High Level thoughts
 Can't really build anything too robust in a few hours. I had to make quick decisions on which libraries to use, which features to support and etc. The architecture is definitely influenced from that first 15 minutes of thinking...In fact, starting from a template project with Dagger and RxAndroid took too much time to setup. I had to start over.
@@ -20,7 +21,7 @@ Can't really build anything too robust in a few hours. I had to make quick decis
 #### Networking
 1. I am using Retrofit with OkHTTP3 for the simplicity. Read-only rest calls can be easily setup.
 1. Jackson is used for JSON serialization and de-serialization.
-1. I am not currently handling any errors as I wanted to focus on the "Happy Path". Someone of retries, and auto
+1. I am not currently handling any errors as I wanted to focus on the "Happy Path". Handling failures, retries, and auto
    download should be implemented at some point.
 
 #### Caching
@@ -48,6 +49,7 @@ Can't really build anything too robust in a few hours. I had to make quick decis
     1. We could cache information loaded via an unattached fragment. 
 1. Lifecycle is problematic as I didn't completely make sure subscription are unregistered.
 1. We should also consider how to handle the case in which referesh is on-going but the user is in Detail View.
+1. Minimal setup with RecyclerViews, Fragment and activities's savedInstances. Need to look to make sure all best practices are followed.
     
 #### Layout, Style and Themes
 1. Layout is minimally done to show the data. 
