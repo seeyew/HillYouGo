@@ -17,10 +17,12 @@ import com.seeyewmo.hillyougo.adapter.NYTCardAdapter;
 import com.seeyewmo.hillyougo.model.NYTWrapper;
 import com.seeyewmo.hillyougo.model.Result;
 import com.seeyewmo.hillyougo.service.DataHelper;
+import com.seeyewmo.hillyougo.service.DataService;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import rx.Subscriber;
+import rx.Subscription;
 
 /**
  * Created by seeyew on 7/7/16.
@@ -29,6 +31,8 @@ public class SectionFragment extends android.support.v4.app.Fragment {
     public static final String FRAGMENT_SECTION_PATH = "section_path";
     private String mSection;
     private DataHelper mDataHelper;
+    private DataService mDataService;
+    private Subscription mDataServiceSubscription;
 
     @Bind(R.id.recycler_view)
     protected RecyclerView mRecyclerView;
@@ -111,12 +115,67 @@ public class SectionFragment extends android.support.v4.app.Fragment {
             Bundle args = getArguments();
             mSection = args.getString(FRAGMENT_SECTION_PATH);
         }
-        mDataHelper = DataHelper.getInstance(getActivity());
+        //mDataHelper = DataHelper.getInstance(getActivity());
+        mDataService = DataService.getInstance(getActivity());
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         loadData(false);
     }
 
-    private void loadData(final boolean isRefresh) {
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mDataServiceSubscription != null) {
+            mDataServiceSubscription.unsubscribe();
+        }
+    }
 
+    private void loadData(final boolean isRefresh) {
+        if (isRefresh) {
+            mDataService.requestRefresh(mSection);
+            return;
+        }
+
+        mDataServiceSubscription = mDataService.getArticles(mSection).subscribe(new Subscriber<NYTWrapper>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(NYTWrapper nytWrapper) {
+                Log.i("SectionFragment", mSection + " !!new data received!!");
+                if (getActivity() != null) {
+                    if (nytWrapper != null) {
+                        if (nytWrapper.getResults() != null) {
+                            Log.i("SectionFragment", mSection + " news added");
+                            mCardAdapter.addAllData(nytWrapper.getResults());
+                        } else {
+                            //no news!
+                            Log.i("SectionFragment", mSection + " No News");
+                            mCardAdapter.clear();
+                        }
+                        if (isRefresh) {
+                            Snackbar.make(mRecyclerView, R.string.data_updated, Snackbar.LENGTH_LONG).show();
+                        }
+                    } else if (nytWrapper == null) {
+                        Log.i("SectionFragment", mSection + " has no local data");
+                    } else if (nytWrapper.getResults() == null) {
+                        Log.i("SectionFragment", mSection + " has no news");
+                    }
+                }
+            }
+        });
+/*
         mDataHelper.getArticles(mSection, isRefresh).subscribe(new Subscriber<NYTWrapper>() {
             @Override
             public void onCompleted() {
@@ -139,6 +198,6 @@ public class SectionFragment extends android.support.v4.app.Fragment {
                     }
                 }
             }
-        });
+        });*/
     }
 }

@@ -68,7 +68,7 @@ public class DataHelper {
         synchronized (sectionToNYTArticlesList) {
             NYTWrapper nytWrapper = sectionToNYTArticlesList.get(section);
             if (nytWrapper != null && nytWrapper.getResults() != null && nytWrapper.getResults().size() > position) {
-                Log.i("DataHelper", "Returning one article");
+                Log.i(TAG, "Returning one article");
                 return nytWrapper.getResults().get(position);
             }
         }
@@ -79,7 +79,7 @@ public class DataHelper {
         return Observable.create(new Observable.OnSubscribe<NYTWrapper>() {
             @Override
             public void call(Subscriber<? super NYTWrapper> subscriber) {
-                Log.i("DataHelper", "Getting articles for section:" + section);
+                Log.i(TAG, "Getting articles for section:" + section);
                 Set<Subscriber<? super NYTWrapper>> set = mSubscribers.get(section);
                 if (set == null) {
                     set = new HashSet<Subscriber<? super NYTWrapper>>();
@@ -94,7 +94,9 @@ public class DataHelper {
 
     private void onNextForAllSubscribers(String section, NYTWrapper result) {
         for (Subscriber<? super NYTWrapper> subscriber : mSubscribers.get(section)) {
-            subscriber.onNext(result);
+            if (!subscriber.isUnsubscribed()) {
+                subscriber.onNext(result);
+            }
         }
     }
 
@@ -103,7 +105,7 @@ public class DataHelper {
         synchronized (sectionToNYTArticlesList) {
             //Step 1: in memory cache
             result = sectionToNYTArticlesList.get(section);
-            Log.i("DataHelper", "Get From In Memory for section:" + section);
+            Log.i(TAG, "Get From In Memory for section:" + section);
             if (result == null) {
                 //Step 2: read from disk
                 //Reading from disk might take a while, so it's handle in the Schedulers.io()
@@ -186,7 +188,7 @@ public class DataHelper {
 
             return mapper.readValue(file, NYTWrapper.class);
         } catch (IOException e) {
-            Log.e("DataHelper", "Get from disk failed" + e);
+            Log.e(TAG, "Get from disk failed" + e);
             return null;
         }
     }
