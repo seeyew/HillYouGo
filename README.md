@@ -22,21 +22,27 @@ from a template project with Dagger and RxAndroid took too much time to setup. I
 
 ### Things that can be improved
 1. Used FB Fresco for download. It comes with default caching mechanism of memory, encoded memory, disk and network requests. It can be configured but I ran out of time.
- 1. I also like this library as we can download a smaller photo and then download the bigger one.
- 2. Supports Shares feature pretty easily
-2. Fragments especially with Master Detail navigation
- 1. Passing info in string and int in order to retrieve data. Probably should have one key instead
- 2. The Detail screen will the activity is destroyed and you restart the app
-3. Photos - this is a big one. It took a while for me to scale and crop the image. I decided not to pursue it further as that could be a product decision. 
- 1. Also, we should add code to get the most appropriate photo for the given screen size.
+    1. Fresco persist bitmaps into ashmen memory to avoid out of memory issue.
+    1. I also like this library as we can download a smaller photo and then download the bigger one.
+    1. Supports Shares feature pretty easily
+1. Fragments especially with Master Detail navigation
+    1. Passing info in string and int in order to retrieve data. Probably should have one key instead
+    1. The Detail screen will the activity is destroyed and you restart the app
+1. Photos - this is a big one. It took a while for me to scale and crop the image. I decided not to pursue it further as that could be a product decision. 
+    1. Also, we should add code to get the most appropriate photo for the given screen size.
 1. The simple cache that I build can be improved or replaced. It doesn't cover all cases. I could have gone the SQLite route but decided against it as our need is simple.
   (But SQLite would have been useful when I needed one article)
-4. Code structure, I just split all the different components into sub-packages, will more time, some refactoring is necessary.
-5. Themes - didn't get a chance to create a theme properly. So that should be completed.
-6. Tests!!
+1. Code structure, I just split all the different components into sub-packages, will more time, some refactoring is necessary.
+1. Themes - didn't get a chance to create a theme properly. So that should be completed.
+1. Tests!!
+1. RXJava code clean up is necessary (especially un-subscribe)
+1. Handling of Network errors as well as auto downloading udpdate if access to data network comes back on.
+
 
 ### Unsupported
 1. Multiple screen sizes 
 2. Master-Detail in Tablets
 3. Getting Thumbnails
+4. No spinner when data is being load
+5. Network call retries
 
