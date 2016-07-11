@@ -10,7 +10,7 @@ Exercise App that uses NYTimes APIs
 6. Maybe API >=16 (not tested). Decided to go with 16 as it covers 95% of phones today.
 
 ### Installation and Run
-1. Download/Clone the repo code
+1. Download/Clone the repo. The master has the latest code but I also create a tag named "submission" to reflect the final commit I made for the submission deadline. I am still developing in the hope of releasing the network and cache part as part of a resuable library.
 1. Set the ANDROID_HOME environment variable to your Android SDK folder or create a local.properties at the top level that sets sdk.dir to your Android SDK folder.
 1. Enable USB debugging on your phone and plug it in. Alternatively, start an emulator!
 1. run ./gradle installDebug
