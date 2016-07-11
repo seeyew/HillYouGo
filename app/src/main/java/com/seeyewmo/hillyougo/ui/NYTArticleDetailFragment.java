@@ -13,7 +13,7 @@ import android.widget.TextView;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.seeyewmo.hillyougo.R;
 import com.seeyewmo.hillyougo.model.Result;
-import com.seeyewmo.hillyougo.service.DataHelper;
+import com.seeyewmo.hillyougo.service.DataService;
 import com.seeyewmo.hillyougo.ui.utils.ImageUtil;
 
 import butterknife.Bind;
@@ -65,7 +65,7 @@ public class NYTArticleDetailFragment extends Fragment {
         }
 
         //TODO: This is a sync call, consider moving to another thread in the future
-        mArticle = DataHelper.getInstance(getContext()).getOneArticle(
+        mArticle = DataService.getInstance(getContext()).getOneArticle(
                 mSection, mItemId);
 
         if (mArticle != null) {

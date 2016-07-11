@@ -6,7 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.seeyewmo.hillyougo.service.NYTService;
+import com.seeyewmo.hillyougo.service.api.NYTService;
 import com.seeyewmo.hillyougo.ui.SectionFragment;
 
 import java.util.ArrayList;

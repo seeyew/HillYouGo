@@ -16,19 +16,23 @@ import com.seeyewmo.hillyougo.R;
 import com.seeyewmo.hillyougo.adapter.NYTCardAdapter;
 import com.seeyewmo.hillyougo.model.NYTWrapper;
 import com.seeyewmo.hillyougo.model.Result;
-import com.seeyewmo.hillyougo.service.DataHelper;
+import com.seeyewmo.hillyougo.service.DataService;
+import com.seeyewmo.hillyougo.service.network.RetrofitException;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import rx.Subscriber;
+import rx.Subscription;
 
 /**
  * Created by seeyew on 7/7/16.
  */
 public class SectionFragment extends android.support.v4.app.Fragment {
+    private static final String TAG = "SectionFragment";
     public static final String FRAGMENT_SECTION_PATH = "section_path";
     private String mSection;
-    private DataHelper mDataHelper;
+    private DataService mDataService;
+    private Subscription mDataServiceSubscription;
 
     @Bind(R.id.recycler_view)
     protected RecyclerView mRecyclerView;
@@ -97,7 +101,6 @@ public class SectionFragment extends android.support.v4.app.Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Log.i("DataHelper", "!!!!Saving section!!!! " + mSection);
         outState.putString(FRAGMENT_SECTION_PATH, mSection);
     }
 
@@ -111,13 +114,31 @@ public class SectionFragment extends android.support.v4.app.Fragment {
             Bundle args = getArguments();
             mSection = args.getString(FRAGMENT_SECTION_PATH);
         }
-        mDataHelper = DataHelper.getInstance(getActivity());
+        mDataService = DataService.getInstance(getActivity());
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         loadData(false);
     }
 
-    private void loadData(final boolean isRefresh) {
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mDataServiceSubscription != null) {
+            mDataServiceSubscription.unsubscribe();
+        }
+    }
 
-        mDataHelper.getArticles(mSection, isRefresh).subscribe(new Subscriber<NYTWrapper>() {
+    private void loadData(final boolean isRefresh) {
+        if (isRefresh) {
+            mDataService.requestRefresh(mSection);
+            return;
+        }
+
+        mDataServiceSubscription = mDataService.getArticles(mSection).subscribe(new Subscriber<NYTWrapper>() {
             @Override
             public void onCompleted() {
 
@@ -125,17 +146,37 @@ public class SectionFragment extends android.support.v4.app.Fragment {
 
             @Override
             public void onError(Throwable e) {
+                Log.e(TAG, "Error in reading data from DataService " + e);
 
+                RetrofitException error = (RetrofitException) e;
+                //LoginErrorResponse response = error.getBodyAs(LoginErrorResponse.class);
+                //TODO: How to we tell clients?
+                //requestSubject.onNext(null);
+                //Also show error text or no data instead of the ListView
+                Snackbar.make(mRecyclerView, String.format(getResources().getString(R.string.data_download_error),
+                        e.getMessage()), Snackbar.LENGTH_LONG).show();
             }
 
             @Override
             public void onNext(NYTWrapper nytWrapper) {
+                Log.i("SectionFragment", mSection + " !!new data received!!");
                 if (getActivity() != null) {
-                    if (nytWrapper != null && nytWrapper.getResults() != null) {
-                        mCardAdapter.addAllData(nytWrapper.getResults());
+                    if (nytWrapper != null) {
+                        if (nytWrapper.getResults() != null) {
+                            Log.i("SectionFragment", mSection + " news added");
+                            mCardAdapter.addAllData(nytWrapper.getResults());
+                        } else {
+                            //no news!
+                            Log.i("SectionFragment", mSection + " No News");
+                            mCardAdapter.clear();
+                        }
                         if (isRefresh) {
                             Snackbar.make(mRecyclerView, R.string.data_updated, Snackbar.LENGTH_LONG).show();
                         }
+                    } else if (nytWrapper == null) {
+                        Log.i("SectionFragment", mSection + " has no local data");
+                    } else if (nytWrapper.getResults() == null) {
+                        Log.i("SectionFragment", mSection + " has no news");
                     }
                 }
             }
