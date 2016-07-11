@@ -1,4 +1,4 @@
-package com.seeyewmo.hillyougo.service;
+package com.seeyewmo.hillyougo.service.api;
 
 import com.seeyewmo.hillyougo.model.NYTResponse;
 

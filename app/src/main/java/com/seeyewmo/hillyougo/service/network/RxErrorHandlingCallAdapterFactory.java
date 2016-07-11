@@ -1,4 +1,4 @@
-package com.seeyewmo.hillyougo.service;
+package com.seeyewmo.hillyougo.service.network;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
