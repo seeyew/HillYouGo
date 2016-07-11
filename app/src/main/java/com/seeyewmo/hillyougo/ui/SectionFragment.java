@@ -115,7 +115,6 @@ public class SectionFragment extends android.support.v4.app.Fragment {
             mSection = args.getString(FRAGMENT_SECTION_PATH);
         }
         mDataService = DataService.getInstance(getActivity());
-
     }
 
     @Override
@@ -137,6 +136,7 @@ public class SectionFragment extends android.support.v4.app.Fragment {
             mDataService.requestRefresh(mSection);
             return;
         }
+        Log.i(TAG, "requesting data for " + mSection);
 
         mDataServiceSubscription = mDataService.getArticles(mSection).subscribe(new Subscriber<NYTWrapper>() {
             @Override

@@ -3,6 +3,7 @@ package com.seeyewmo.hillyougo.ui;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,6 +27,7 @@ public class SectionsCarouselFragment extends android.support.v4.app.Fragment{
     protected ViewPager pager;
 
     private SectionsCarouselAdapter mSectionCarouselAdapter;
+    private int mCurrentViewPagePosition = 0;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -39,15 +41,38 @@ public class SectionsCarouselFragment extends android.support.v4.app.Fragment{
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        setCurrentItem(mCurrentViewPagePosition);
+    }
+
+    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
         ButterKnife.bind(this, getView());
 
+        pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                //do nothing
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                mCurrentViewPagePosition = position;
+                Log.i("CarouselFargment", "New viewpager position is " + position );
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                //do nothing
+            }
+        });
         pager.setAdapter(mSectionCarouselAdapter);
         indicator.setDistributeEvenly(true);
         indicator.setViewPager(pager);
-        pager.setCurrentItem(0);
+        pager.setCurrentItem(mCurrentViewPagePosition);
     }
 
     public void setCurrentItem(int position) {

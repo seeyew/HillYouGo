@@ -66,7 +66,9 @@ public class NYTArticleDetailActivity extends AppCompatActivity {
             //
             // http://developer.android.com/design/patterns/navigation.html#up-vs-back
             //
-            navigateUpTo(new Intent(this, MainActivity.class));
+            Intent backToHomeIntent = new Intent(this, MainActivity.class);
+            backToHomeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            navigateUpTo(backToHomeIntent);
             return true;
         }
         return super.onOptionsItemSelected(item);
