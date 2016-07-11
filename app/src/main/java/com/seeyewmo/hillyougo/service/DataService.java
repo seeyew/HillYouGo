@@ -9,8 +9,11 @@ import com.seeyewmo.hillyougo.model.Result;
 import com.seeyewmo.hillyougo.service.api.NYTService;
 import com.seeyewmo.hillyougo.service.api.OKHttpFactory;
 import com.seeyewmo.hillyougo.service.network.RetrofitException;
-import com.seeyewmo.hillyougo.service.network.RetryAPIWithDelay;
 import com.seeyewmo.hillyougo.service.network.RetrofitServiceFactory;
+import com.seeyewmo.hillyougo.service.network.RetryAPIWithDelay;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -39,13 +42,14 @@ public class DataService {
 
     private Context mContext;
     private Cache mCache;
-    private final PublishSubject<NYTWrapper> publishCacheOrWaitPublish = PublishSubject.create();
+    private Map<String,PublishSubject<NYTWrapper>> mPublishCacheOrWaitPublish;
     private NYTService service = RetrofitServiceFactory.createRetrofitService(NYTService.class,
             NYTService.SERVICE_ENDPOINT, OKHttpFactory.createOkHttpClientWithApiKey());
 
     private DataService(Context context) {
         this.mContext = context;
         this.mCache = Cache.getInstance(context);
+        this.mPublishCacheOrWaitPublish = new HashMap<>();
     }
 
     public Result getOneArticle(final String section, int position) {
@@ -68,6 +72,7 @@ public class DataService {
         //if we don't have any values, get from server
         //if server returns error, let the client of this method know.
         //publishCacheOrWaitPublish subscribes to observable from local storage
+        final PublishSubject<NYTWrapper> publishCacheOrWaitPublish = getPublishCacheOrWaitPublishSubject(section);
         mCache.getArticles(section).subscribe(new Subscriber<NYTWrapper>() {
             @Override
             public void onCompleted() {
@@ -127,7 +132,7 @@ public class DataService {
                         requestSubject.onError(e);
                         //TODO: convert it to another Throwable with messages that more client friendly?
                         //LoginErrorResponse response = error.getBodyAs(LoginErrorResponse.class);
-                        publishCacheOrWaitPublish.onError(e);
+                        getPublishCacheOrWaitPublishSubject(section).onError(e);
                     }
 
                     @Override
@@ -138,5 +143,14 @@ public class DataService {
                     }
         });
         return requestSubject.asObservable();
+    }
+
+    private PublishSubject<NYTWrapper> getPublishCacheOrWaitPublishSubject(String section) {
+        PublishSubject<NYTWrapper> publishSubject = mPublishCacheOrWaitPublish.get(section);
+        if (publishSubject == null) {
+            publishSubject = PublishSubject.create();
+            mPublishCacheOrWaitPublish.put(section, publishSubject);
+        }
+        return publishSubject;
     }
 }
