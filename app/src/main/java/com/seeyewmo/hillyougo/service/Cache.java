@@ -63,7 +63,6 @@ final class Cache {
         synchronized (sectionToNYTArticlesList) {
             NYTWrapper nytWrapper = sectionToNYTArticlesList.get(section);
             if (nytWrapper != null && nytWrapper.getResults() != null && nytWrapper.getResults().size() > position) {
-                Log.i("DataHelper", "Returning one article");
                 return nytWrapper.getResults().get(position);
             }
         }
@@ -168,7 +167,6 @@ final class Cache {
 
             return mapper.readValue(file, NYTWrapper.class);
         } catch (IOException e) {
-            Log.e("DataHelper", "Get from disk failed" + e);
             return null;
         }
     }

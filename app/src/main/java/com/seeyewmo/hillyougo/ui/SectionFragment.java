@@ -16,9 +16,8 @@ import com.seeyewmo.hillyougo.R;
 import com.seeyewmo.hillyougo.adapter.NYTCardAdapter;
 import com.seeyewmo.hillyougo.model.NYTWrapper;
 import com.seeyewmo.hillyougo.model.Result;
-import com.seeyewmo.hillyougo.service.DataHelper;
 import com.seeyewmo.hillyougo.service.DataService;
-import com.seeyewmo.hillyougo.service.RetrofitException;
+import com.seeyewmo.hillyougo.service.network.RetrofitException;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -32,7 +31,6 @@ public class SectionFragment extends android.support.v4.app.Fragment {
     private static final String TAG = "SectionFragment";
     public static final String FRAGMENT_SECTION_PATH = "section_path";
     private String mSection;
-    private DataHelper mDataHelper;
     private DataService mDataService;
     private Subscription mDataServiceSubscription;
 
@@ -103,7 +101,6 @@ public class SectionFragment extends android.support.v4.app.Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Log.i("DataHelper", "!!!!Saving section!!!! " + mSection);
         outState.putString(FRAGMENT_SECTION_PATH, mSection);
     }
 
@@ -117,7 +114,6 @@ public class SectionFragment extends android.support.v4.app.Fragment {
             Bundle args = getArguments();
             mSection = args.getString(FRAGMENT_SECTION_PATH);
         }
-        //mDataHelper = DataHelper.getInstance(getActivity());
         mDataService = DataService.getInstance(getActivity());
 
     }
@@ -157,7 +153,8 @@ public class SectionFragment extends android.support.v4.app.Fragment {
                 //TODO: How to we tell clients?
                 //requestSubject.onNext(null);
                 //Also show error text or no data instead of the ListView
-                Snackbar.make(mRecyclerView, String.format(getResources().getString(R.string.data_download_error), e.getMessage()), Snackbar.LENGTH_LONG).show();
+                Snackbar.make(mRecyclerView, String.format(getResources().getString(R.string.data_download_error),
+                        e.getMessage()), Snackbar.LENGTH_LONG).show();
             }
 
             @Override
@@ -184,29 +181,5 @@ public class SectionFragment extends android.support.v4.app.Fragment {
                 }
             }
         });
-/*
-        mDataHelper.getArticles(mSection, isRefresh).subscribe(new Subscriber<NYTWrapper>() {
-            @Override
-            public void onCompleted() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onNext(NYTWrapper nytWrapper) {
-                if (getActivity() != null) {
-                    if (nytWrapper != null && nytWrapper.getResults() != null) {
-                        mCardAdapter.addAllData(nytWrapper.getResults());
-                        if (isRefresh) {
-                            Snackbar.make(mRecyclerView, R.string.data_updated, Snackbar.LENGTH_LONG).show();
-                        }
-                    }
-                }
-            }
-        });*/
     }
 }

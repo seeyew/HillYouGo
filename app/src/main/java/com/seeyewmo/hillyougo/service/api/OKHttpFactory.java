@@ -12,7 +12,7 @@ import okhttp3.Response;
  * Created by seeyew on 7/10/16.
  */
 public class OKHttpFactory {
-    public static OkHttpClient getOkHttpClientWithApiKey() {
+    public static OkHttpClient createOkHttpClientWithApiKey() {
         return new OkHttpClient.Builder()
                 .addInterceptor(new Interceptor() {
                     @Override

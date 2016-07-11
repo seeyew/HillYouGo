@@ -6,6 +6,11 @@ import android.util.Log;
 import com.seeyewmo.hillyougo.model.NYTResponse;
 import com.seeyewmo.hillyougo.model.NYTWrapper;
 import com.seeyewmo.hillyougo.model.Result;
+import com.seeyewmo.hillyougo.service.api.NYTService;
+import com.seeyewmo.hillyougo.service.api.OKHttpFactory;
+import com.seeyewmo.hillyougo.service.network.RetrofitException;
+import com.seeyewmo.hillyougo.service.network.RetryAPIWithDelay;
+import com.seeyewmo.hillyougo.service.network.RetrofitServiceFactory;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -31,11 +36,12 @@ public class DataService {
         }
         return sInstance;
     }
+
     private Context mContext;
     private Cache mCache;
-    final PublishSubject<NYTWrapper> publishCacheOrWaitPublish = PublishSubject.create();
-    private NYTService service = ServiceFactory.createRetrofitService(NYTService.class,
-            NYTService.SERVICE_ENDPOINT);
+    private final PublishSubject<NYTWrapper> publishCacheOrWaitPublish = PublishSubject.create();
+    private NYTService service = RetrofitServiceFactory.createRetrofitService(NYTService.class,
+            NYTService.SERVICE_ENDPOINT, OKHttpFactory.createOkHttpClientWithApiKey());
 
     private DataService(Context context) {
         this.mContext = context;
@@ -55,18 +61,6 @@ public class DataService {
         //NYTWrapper with no results means download completed but we have nothing.
         //Potential solution (B) if there's local data return regardless and launch refresh if necessary
         //AND if there's no local data, wait to get data before returning.
-
-        //Original implementation with problems described above
-//        return mCache.getArticles(section).doOnNext(new Action1<NYTWrapper>() {
-//            @Override
-//            public void call(NYTWrapper nytWrapper) {
-//                if (nytWrapper == null || !nytWrapper.isUpToDate()) {
-//                    Log.i(TAG, section + " is stale, request refresh");
-//                    requestRefresh(section);
-//                }
-//            }
-//        });
-
 
         //What has to happen?
         //return values if we have it
@@ -89,12 +83,12 @@ public class DataService {
             public void onNext(NYTWrapper nytWrapper) {
                 //Get a refresh if we have no data or if the data is still
                 if (nytWrapper == null || !nytWrapper.isUpToDate()) {
-                    Log.i(TAG, section + " cached data is " + nytWrapper == null? "null" : "still");
+                    Log.i(TAG, section + " cached data is " + nytWrapper == null ? "null" : "still");
                     requestRefresh(section);
                 }
 
                 if (nytWrapper != null) {
-                    Log.i(TAG, section + " cached data is available, up-to-date: " + (nytWrapper.isUpToDate()? "yes" : "no"));
+                    Log.i(TAG, section + " cached data is available, up-to-date: " + (nytWrapper.isUpToDate() ? "yes" : "no"));
                     //Found a hit locally, so let's notify our subscribers!
                     publishCacheOrWaitPublish.onNext(nytWrapper);
                 }
@@ -108,36 +102,40 @@ public class DataService {
     public Observable<Void> requestRefresh(final String section) {
         final BehaviorSubject<Void> requestSubject = BehaviorSubject.create();
         Log.i(TAG, section + " is being refreshed");
-        service.getArticles(section,7).subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io()).map(new Func1<NYTResponse, NYTWrapper>() {
-            @Override
-            public NYTWrapper call(NYTResponse nytResponse) {
-                return new NYTWrapper(nytResponse);
-            }
-        }).subscribe(new Subscriber<NYTWrapper>() {
-            @Override
-            public void onCompleted() {
-                requestSubject.onCompleted();
-            }
+        service.getArticles(section, 7)
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .retryWhen(new RetryAPIWithDelay(3,3000))
+                .map(new Func1<NYTResponse, NYTWrapper>() {
+                    @Override
+                    public NYTWrapper call(NYTResponse nytResponse) {
+                        return new NYTWrapper(nytResponse);
+                    }
+                })
+                .subscribe(new Subscriber<NYTWrapper>() {
+                    @Override
+                    public void onCompleted() {
+                        requestSubject.onCompleted();
+                    }
 
-            @Override
-            public void onError(Throwable e) {
-                Log.e(TAG, "APIs to NYT failed " + e);
-                RetrofitException error = (RetrofitException) e;
-                //TODO: How to we tell clients?
-                //requestSubject.onNext(null);
-                requestSubject.onError(e);
-                //TODO: convert it to another Throwable with messages that more client friendly?
-                //LoginErrorResponse response = error.getBodyAs(LoginErrorResponse.class);
-                publishCacheOrWaitPublish.onError(e);
-            }
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG, "APIs to NYT failed " + e);
+                        RetrofitException error = (RetrofitException) e;
+                        //TODO: How to we tell clients?
+                        //requestSubject.onNext(null);
+                        requestSubject.onError(e);
+                        //TODO: convert it to another Throwable with messages that more client friendly?
+                        //LoginErrorResponse response = error.getBodyAs(LoginErrorResponse.class);
+                        publishCacheOrWaitPublish.onError(e);
+                    }
 
-            @Override
-            public void onNext(NYTWrapper nytWrapper) {
-                Log.i(TAG, section + " refresh request returned");
-                mCache.cacheNewArticles(section,nytWrapper);
-                requestSubject.onNext(null);
-            }
+                    @Override
+                    public void onNext(NYTWrapper nytWrapper) {
+                        Log.i(TAG, section + " refresh request returned");
+                        mCache.cacheNewArticles(section, nytWrapper);
+                        requestSubject.onNext(null);
+                    }
         });
         return requestSubject.asObservable();
     }
